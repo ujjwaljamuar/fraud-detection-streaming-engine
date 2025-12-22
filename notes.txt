@@ -1,0 +1,32 @@
+PHASE 1
+Set up a local Apache Kafka environment using Docker that is:
+Stable
+Observable (via Kafka UI)
+Ready for producers and consumers
+
+
+docker exec -it kafka kafka-topics \
+  --create \
+  --topic transactions \
+  --bootstrap-server kafka:9092 \
+  --replication-factor 1 \
+  --partitions 3
+
+docker exec -it kafka kafka-topics \
+  --list \
+  --bootstrap-server kafka:9092
+
+Create DLQ Topic
+docker exec -it kafka kafka-topics \
+  --create \
+  --topic transactions-dlq \
+  --bootstrap-server kafka:9092 \
+  --replication-factor 1 \
+  --partitions 1
+
+
+run this after docker compose up
+==================================================
+PHASE 2
+setup python producer
+use faker library to create data and send it to kafka topic
