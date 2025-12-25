@@ -7,19 +7,35 @@ import org.springframework.stereotype.Service;
 import com.streamshield.consumer.model.Transaction;
 import com.streamshield.consumer.service.TransactionService;
 
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
+
 @Service
 public class TransactionConsumer {
 
     private final TransactionService transactionService;
+    private final Counter recordsConsumed;
+    private final Counter fraudDetected;
 
     @Autowired
-    public TransactionConsumer(TransactionService transactionService) {
+    public TransactionConsumer(TransactionService transactionService, MeterRegistry meterRegistry) {
         this.transactionService = transactionService;
+
+        this.recordsConsumed = Counter.builder("fraud.records.consumed")
+                .description("Total Kafka records consumed")
+                .register(meterRegistry);
+
+        this.fraudDetected = Counter.builder("fraud.records.flagged")
+                .description("Total fraudulent transactions detected")
+                .register(meterRegistry);
+
     }
 
     @KafkaListener(topics = "transactions", groupId = "fraud-detection-group")
     public void consume(Transaction transaction) {
         try {
+            recordsConsumed.increment();
+
             System.out.println("----------------------------------------");
             System.out.println("Received transaction:");
             System.out.println(transaction.getTransaction_id());
@@ -30,7 +46,11 @@ public class TransactionConsumer {
             System.out.println(transaction.getLocation());
             System.out.println(transaction.getTimestamp());
 
-            transactionService.detectFraud(transaction);
+            boolean isFraud = transactionService.detectFraud(transaction);
+
+            if (isFraud) {
+                fraudDetected.increment();
+            }
 
             // Save transaction to DB
             transactionService.saveTransaction(transaction);

@@ -15,12 +15,14 @@ public class TransactionService {
         this.transactionRepository = transactionRepository;
     }
 
-    public void detectFraud(Transaction transaction) {
+    public boolean detectFraud(Transaction transaction) {
         // Implement fraud detection logic
         if (transaction.getAmount() > 100000) {
             transaction.setIsFraud(true);
+            return true;
         } else {
             transaction.setIsFraud(false);
+            return false;
         }
     }
 
