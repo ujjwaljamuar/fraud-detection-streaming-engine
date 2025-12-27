@@ -20,6 +20,7 @@ public class Transaction {
     private String location;
     private String timestamp;
     private boolean isFraud;
+    private int riskScore;
 
     public Transaction() {}
 
@@ -37,6 +38,14 @@ public class Transaction {
 
     public void setIsFraud(boolean isFraud) {
         this.isFraud = isFraud;
+    }
+
+    public int riskScore(){
+        return riskScore;
+    }
+
+    public void setRiskScore(int riskScore) {
+        this.riskScore = riskScore;
     }
 
     public String getTransaction_id() {

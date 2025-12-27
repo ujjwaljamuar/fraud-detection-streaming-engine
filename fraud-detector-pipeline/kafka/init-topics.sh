@@ -2,7 +2,7 @@
 set -e
 
 echo "Waiting for Kafka..."
-sleep 20
+sleep 30
 
 kafka-topics \
   --bootstrap-server kafka:9092 \
