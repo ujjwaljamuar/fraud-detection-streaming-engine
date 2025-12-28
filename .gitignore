@@ -5,3 +5,6 @@
 plan.txt
 
 application.yml
+
+**/*.hcl
+.terraform
